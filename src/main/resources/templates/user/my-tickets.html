@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <h3>Lịch sử đặt vé của bạn</h3>
+  <table class="table table-striped mt-4">
+    <thead>
+    <tr>
+      <th>Phim</th>
+      <th>Suất chiếu</th>
+      <th>Số ghế</th>
+      <th>Trạng thái</th>
+      <th>Thao tác</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="ticket : ${myTickets}">
+      <td th:text="${ticket.movieTitle}"></td>
+      <td th:text="${ticket.showTime}"></td>
+      <td th:text="${ticket.seatNumber}"></td>
+      <td><span class="badge bg-success">Đã thanh toán</span></td>
+      <td>
+        <a th:if="${ticket.canCancel}"
+           th:href="@{'/cancel-ticket/' + ${ticket.id}}"
+           class="btn btn-sm btn-danger"
+           onclick="return confirm('Bạn có chắc muốn hủy vé và nhận lại tiền?')">Hủy vé</a>
+        <span th:unless="${ticket.canCancel}" class="text-muted small">Không thể hủy</span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

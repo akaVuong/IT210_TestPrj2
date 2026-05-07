@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý phim - Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-dark shadow mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1 text-primary">CINEMA ADMIN</span>
+        <div class="d-flex align-items-center">
+            <span class="text-white me-3" th:text="${session.user.fullName}">Admin Name</span>
+            <a href="/profile">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=0D6EFD&color=fff"
+                     class="rounded-circle border border-2 border-primary"
+                     style="width: 40px; height: 40px; cursor: pointer;">
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group shadow-sm">
+                <a href="/admin/movies" class="list-group-item list-group-item-action active">Quản lý phim</a>
+                <a href="#" class="list-group-item list-group-item-action">Thiết lập suất chiếu</a>
+                <a href="#" class="list-group-item list-group-item-action text-danger fw-bold">Báo cáo doanh thu</a>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card shadow p-4">
+                <div class="d-flex justify-content-between mb-3">
+                    <h4>Danh sách phim</h4>
+                    <a href="/admin/movies/add" class="btn btn-primary">+ Thêm phim mới</a>
+                </div>
+
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên phim</th>
+                        <th>Thể loại</th> <th>Thời lượng</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="movie : ${movies}">
+                        <td th:text="${movie.id}"></td>
+                        <td class="fw-bold" th:text="${movie.title}"></td>
+
+                        <td>
+            <span class="badge bg-info text-dark"
+                  th:text="${movie.genre != null ? movie.genre.name : 'Chưa phân loại'}">
+            </span>
+                        </td>
+
+                        <td th:text="${movie.duration} + ' phút'"></td>
+                        <td class="text-center">
+                            <a th:href="@{'/admin/movies/edit/' + ${movie.id}}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil"></i> Sửa
+                            </a>
+                            <a th:href="@{'/admin/movies/delete/' + ${movie.id}}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                <i class="bi bi-trash"></i> Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(movies)}">
+                        <td colspan="5" class="text-center text-muted">Chưa có bộ phim nào trong hệ thống...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

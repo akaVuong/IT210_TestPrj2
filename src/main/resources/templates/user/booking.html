@@ -1,0 +1,23 @@
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card p-4 shadow">
+                <h4>Chọn ghế cho phim: <span th:text="${movie.title}"></span></h4>
+                <div class="screen text-center bg-secondary text-white my-4 p-2">MÀN HÌNH</div>
+
+                <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <div th:each="seat : ${seats}"
+                         th:classappend="${seat.isBooked ? 'bg-danger' : 'bg-outline-primary'}"
+                         class="btn border p-3" style="width: 50px;"
+                         th:text="${seat.seatNumber}">
+                    </div>
+                </div>
+
+                <form action="/confirm-booking" method="post" class="mt-4">
+                    <input type="hidden" name="movieId" th:value="${movie.id}">
+                    <button type="submit" class="btn btn-success w-100">Xác nhận đặt vé</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
