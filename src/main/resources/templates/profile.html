@@ -19,7 +19,7 @@
         <a th:if="${session.user.role.name() == 'STAFF'}" href="/staff/counter" class="btn btn-primary">Về trang tại quầy</a>
         <a th:if="${session.user.role.name() == 'CUSTOMER'}" href="/home" class="btn btn-success">Tiếp tục đặt vé</a>
 
-        <a href="/logout" class="btn btn-danger">Đăng xuất</a>
+        <a th:href="@{/logout}" class="btn btn-danger">Đăng xuất</a>
     </div>
 </div>
 </body>

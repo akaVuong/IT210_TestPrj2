@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Đăng ký - Smart Cinema</title>
+    <title>Đăng ký - Cinema</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body class="bg-light">
@@ -11,22 +11,30 @@
         <div class="col-md-5 card p-4 shadow border-0" style="border-radius: 15px;">
             <h3 class="text-center mb-4 fw-bold text-success">Tạo tài khoản mới</h3>
 
-            <form th:action="@{/register}" th:object="${user}" method="post">
+            <form th:action="@{/register}" th:object="${user}" method="post" novalidate>
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Tên đăng nhập</label>
-                    <input type="text" th:field="*{username}" class="form-control" placeholder="Nhập username..." required>
+                    <input type="text" th:field="*{username}" class="form-control" placeholder="Nhập username...">
+                    <small th:if="${errUser}" class="text-danger fw-bold" th:text="${errUser}"></small>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Email</label>
-                    <input type="email" th:field="*{email}" class="form-control" placeholder="example@gmail.com" required>
+                    <input type="email" th:field="*{email}" class="form-control" placeholder="example@gmail.com">
+                    <small th:if="${errEmail}" class="text-danger fw-bold" th:text="${errEmail}"></small>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Mật khẩu</label>
-                    <input type="password" th:field="*{password}" class="form-control" placeholder="********" required>
+                    <input type="password" th:field="*{password}" class="form-control" placeholder="********">
+                    <small th:if="${errPass}" class="text-danger fw-bold" th:text="${errPass}"></small>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Họ và tên</label>
-                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="Nhập đầy đủ họ tên..." required>
+                    <input type="text" th:field="*{fullName}" class="form-control" placeholder="Nhập đầy đủ họ tên...">
+                    <small th:if="${errName}" class="text-danger fw-bold" th:text="${errName}"></small>
                 </div>
 
                 <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm">Đăng ký ngay</button>

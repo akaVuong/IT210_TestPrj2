@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @Controller
 public class AuthController {
     @Autowired private UserService userService;
@@ -20,17 +22,38 @@ public class AuthController {
                               @RequestParam String password,
                               HttpSession session,
                               Model model) {
-        return userService.login(username, password)
-                .map(user -> {
-                    session.setAttribute("user", user);
-                    if (user.getRole() == User.Role.ADMIN) return "redirect:/admin/movies";
-                    if (user.getRole() == User.Role.STAFF) return "redirect:/staff/counter";
-                    return "redirect:/user/home";
-                })
-                .orElseGet(() -> {
-                    model.addAttribute("error", "Sai tài khoản hoặc mật khẩu!");
-                    return "auth/login";
-                });
+        boolean hasError = false;
+
+        // 1. Kiểm tra trống Username
+        if (username == null || username.trim().isEmpty()) {
+            model.addAttribute("errUser", "Vui lòng nhập tên đăng nhập");
+            hasError = true;
+        }
+
+        // 2. Kiểm tra trống Password
+        if (password == null || password.trim().isEmpty()) {
+            model.addAttribute("errPass", "Vui lòng nhập mật khẩu");
+            hasError = true;
+        }
+
+        if (hasError) return "auth/login";
+
+        // 3. Kiểm tra thông tin đăng nhập trong Database
+        Optional<User> userOpt = userService.login(username, password);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            session.setAttribute("user", user);
+
+            // Điều hướng theo Role
+            if (user.getRole() == User.Role.ADMIN) return "redirect:/admin/movies";
+            if (user.getRole() == User.Role.STAFF) return "redirect:/staff/dashboard";
+            return "redirect:/user/home";
+        } else {
+            // Nếu sai tài khoản hoặc mật khẩu
+            model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không chính xác!");
+            return "auth/login";
+        }
     }
 
     @GetMapping("/register")
@@ -39,17 +62,44 @@ public class AuthController {
         return "auth/register";
     }
 
+
     @PostMapping("/register")
-    public String handleRegister(@ModelAttribute User user, HttpSession session) {
-        // Ép kiểu role là CUSTOMER ngay tại đây trước khi lưu
+    public String handleRegister(@ModelAttribute User user, HttpSession session, Model model) {
+        boolean hasError = false;
+
+        // 1. Check Username
+        if (user.getUsername() == null || user.getUsername().length() < 5) {
+            model.addAttribute("errUser", "Tên đăng nhập phải ít nhất 5 ký tự");
+            hasError = true;
+        }
+
+        // 2. Check Email
+        if (user.getEmail() == null || !user.getEmail().toLowerCase().endsWith("@gmail.com")) {
+            model.addAttribute("errEmail", "Email phải có đuôi @gmail.com");
+            hasError = true;
+        }
+
+        // 3. Check Password
+        if (user.getPassword() == null || user.getPassword().length() < 3) {
+            model.addAttribute("errPass", "Mật khẩu phải từ 3 ký tự trở lên");
+            hasError = true;
+        }
+
+        // 4. Check FullName
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            model.addAttribute("errName", "Vui lòng nhập họ và tên");
+            hasError = true;
+        }
+
+        // Nếu có bất kỳ lỗi nào thì quay lại trang đăng ký
+        if (hasError) {
+            return "auth/register";
+        }
+
+        // Nếu mọi thứ ổn thì lưu vào DB
         user.setRole(User.Role.CUSTOMER);
-
-        // Lưu vào database qua service
         User savedUser = userService.register(user);
-
-        // Lưu vào session để các trang sau (như home, profile) có dữ liệu hiển thị
         session.setAttribute("user", savedUser);
-
         return "redirect:/user/home";
     }
 
@@ -60,4 +110,15 @@ public class AuthController {
         model.addAttribute("user", user);
         return "profile";
     }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        // Xóa toàn bộ dữ liệu trong session
+        session.invalidate();
+        return "redirect:/login";
+    }
+
+
+
+
 }

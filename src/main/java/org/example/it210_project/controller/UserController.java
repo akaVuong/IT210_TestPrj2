@@ -16,14 +16,13 @@ public class UserController {
 
     @GetMapping("/user/home")
     public String userHome(HttpSession session, Model model) {
-        // Kiểm tra xem user đã đăng nhập chưa
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
-            return "redirect:/login"; // Nếu chưa có session thì bắt quay lại đăng nhập
+            return "redirect:/login";
         }
 
         model.addAttribute("movies", movieService.getAllMovies());
-        return "user/home"; // Trả về file home.html
+        return "user/home";
     }
 }

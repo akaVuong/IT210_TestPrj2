@@ -15,7 +15,6 @@ public class MovieService {
         return movieRepository.findAll();
     }
 
-    // BỔ SUNG HÀM NÀY: Để lấy dữ liệu phim cũ đổ lên Form sửa
     public Movie getMovieById(Long id) {
         return movieRepository.findById(id).orElse(null);
     }
