@@ -1,32 +1,125 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/user/home">🎥 SMART CINEMA</a>
-        <div class="d-flex align-items-center">
-            <a href="/user/tickets" class="btn btn-outline-info btn-sm me-3">Vé của tôi</a>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang chủ - TP Cinema</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+            url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover; background-position: center;
+            color: white; padding: 60px 0; border-radius: 0 0 30px 30px;
+        }
+        .movie-card { transition: all 0.3s; border-radius: 15px; overflow: hidden; border: none; }
+        .movie-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .poster-wrapper { position: relative; }
+        .age-badge { position: absolute; top: 10px; left: 10px; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
+        .search-bar { border-radius: 30px; padding-left: 20px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
 
-            <a href="/profile">
-                <img th:src="'https://ui-avatars.com/api/?name=' + ${session.user?.fullName}"
-                     class="rounded-circle border border-2 border-primary"
-                     style="width: 40px; cursor: pointer;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-primary" href="/user/home">🎥 TP CINEMA</a>
+        <div class="d-flex align-items-center">
+            <a href="/user/tickets" class="btn btn-link text-white text-decoration-none me-3">
+                <i class="bi bi-ticket-detailed"></i> Vé của tôi
             </a>
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown">
+                    <img th:src="'https://ui-avatars.com/api/?name=' + ${session.user?.fullName} + '&background=0D6EFD&color=fff'"
+                         class="rounded-circle border border-2 border-primary" style="width: 40px;">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li class="px-3 py-2 fw-bold text-primary border-bottom" th:text="${session.user?.fullName}"></li>
+                    <li><a class="dropdown-item mt-2" href="/profile"><i class="bi bi-person me-2"></i>Hồ sơ</a></li>
+                    <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                </ul>
+            </div>
         </div>
     </div>
 </nav>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Danh Sách Phim Đang Chiếu</h2>
-    <div class="row">
-        <div class="col-md-3 mb-4" th:each="movie : ${movies}">
-            <div class="card h-100 shadow-sm border-0">
-                <img th:src="${movie.posterUrl}" class="card-img" style="height: 350px; object-fit: cover;">
-                <div class="card-body">
-                    <h5 class="fw-bold" th:text="${movie.title}"></h5>
-                    <p class="text-muted small" th:text="${movie.genre.name}"></p>
-                    <a th:href="@{'/user/booking/' + ${movie.id}}" class="btn btn-primary w-100">Chọn ghế & Đặt vé</a>
-                </div>
+<div class="hero-section text-center mb-5">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Trải Nghiệm Điện Ảnh Đỉnh Cao</h1>
+        <p class="lead mb-4">Tìm kiếm bộ phim yêu thích và đặt vé chỉ trong vài giây</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="/user/home" method="get" class="d-flex gap-2">
+                    <input type="text" name="keyword" class="form-control form-control-lg search-bar"
+                           placeholder="Tìm tên phim, thể loại...">
+                    <button class="btn btn-primary rounded-pill px-4 fw-bold shadow">TÌM KIẾM</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h3 class="fw-bold"><i class="bi bi-fire text-danger"></i> Phim Đang Chiếu</h3>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group shadow-sm">
+                <button class="btn btn-white active border">Tất cả</button>
+                <button class="btn btn-white border">Hành động</button>
+                <button class="btn btn-white border">Tình cảm</button>
+                <button class="btn btn-white border">Kinh dị</button>
+            </div>
+        </div>
+    </div>
 
+    <div class="row g-4">
+        <div class="col-md-3" th:each="st : ${showtimes}">
+            <div class="card h-100 movie-card shadow-sm">
+                <div class="poster-wrapper">
+                    <img th:src="${st.movie.posterUrl}" class="card-img-top" style="height: 380px; object-fit: cover;">
+                    <span class="age-badge bg-warning text-dark" th:text="${st.movie.ageRating}">T16</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="fw-bold mb-1 text-truncate" th:text="${st.movie.title}"></h5>
+                    <div class="d-flex justify-content-between mb-3 small">
+                        <span class="text-primary fw-bold" th:text="${st.movie.genre.name}"></span>
+                        <span class="text-muted"><i class="bi bi-clock"></i> <span th:text="${st.movie.duration}"></span>p</span>
+                    </div>
+
+                    <div class="bg-light p-2 rounded mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small fw-bold text-secondary">SUẤT CHIẾU:</span>
+                            <span class="badge bg-dark" th:text="${#temporals.format(st.startTime, 'HH:mm')}"></span>
+                        </div>
+                        <div class="small text-muted mt-1">
+                            <i class="bi bi-door-open"></i> <span th:text="${st.room.name}"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 fw-bold text-danger mb-0" th:text="${#numbers.formatDecimal(st.movie.price, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                        <a th:href="@{'/user/booking/' + ${st.id}}" class="btn btn-primary rounded-pill px-3 fw-bold">ĐẶT VÉ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(showtimes)}">
+            <i class="bi bi-camera-reels fs-1 text-muted"></i>
+            <p class="mt-3 text-muted">Hiện tại chưa có suất chiếu nào phù hợp.</p>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-dark text-white py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-0">© 2026 TP CINEMA - Hệ thống đặt vé trực tuyến thông minh</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 package org.example.it210_project.model;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import java.util.List;
 
 @Entity
 @Table(name = "genres")
@@ -12,6 +15,10 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "Tên thể loại không được để trống")
+    @Column(unique = true)
     private String name;
+
+    @OneToMany(mappedBy = "genre")
+    private List<Movie> movies;
 }

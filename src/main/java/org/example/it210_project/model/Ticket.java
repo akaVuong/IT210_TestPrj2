@@ -1,28 +1,36 @@
 package org.example.it210_project.model;
+
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "tickets")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "showtime_id", nullable = false)
     private Showtime showtime;
 
-    @ManyToOne
-    @JoinColumn(name = "seat_id", nullable = false)
-    private Seat seat;
+    private LocalDateTime bookingTime;
 
-    private Double price;
+    private Double totalAmount; // Tổng tiền = giá vé * số lượng ghế
+
+    private String status; // "BOOKED" (Thành công), "CANCELLED" (Đã hủy - CORE-09)
+
+    // Quan hệ: Một hóa đơn có nhiều chi tiết ghế (CORE-07)
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private List<TicketDetail> ticketDetails;
 }
